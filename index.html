@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邹芹 - 个人简历</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#1e40af',
+                        accent: '#60a5fa',
+                        neutral: '#f3f4f6',
+                        dark: '#1e293b'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            }
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            }
+            .timeline-item::before {
+                content: '';
+                position: absolute;
+                left: -31px;
+                top: 5px;
+                height: 15px;
+                width: 15px;
+                border-radius: 50%;
+                background: #3b82f6;
+                border: 3px solid #e5e7eb;
+            }
+            .timeline-item::after {
+                content: '';
+                position: absolute;
+                left: -24px;
+                top: 20px;
+                height: calc(100% + 10px);
+                width: 2px;
+                background: #e5e7eb;
+            }
+            .timeline-item:last-child::after {
+                display: none;
+            }
+            .img-placeholder {
+                background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+                transition: all 0.3s ease;
+            }
+            .img-placeholder:hover {
+                background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+            }
+            .portfolio-img {
+                transition: all 0.3s ease;
+            }
+            .portfolio-img:hover {
+                transform: scale(1.05);
+                cursor: zoom-in;
+                box-shadow: 0 0 0 2px #3b82f6, 0 0 20px rgba(59, 130, 246, 0.5);
+            }
+            .zoom-indicator {
+                position: absolute;
+                bottom: 8px;
+                right: 8px;
+                background-color: rgba(0, 0, 0, 0.7);
+                color: white;
+                padding: 2px 8px;
+                border-radius: 12px;
+                font-size: 12px;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                pointer-events: none;
+            }
+            .img-container {
+                position: relative;
+                overflow: hidden;
+            }
+            .img-container:hover .zoom-indicator {
+                opacity: 1;
+            }
+            /* 图片模态框样式 */
+            .modal-backdrop {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.9);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+            }
+            .modal-backdrop.active {
+                opacity: 1;
+                visibility: visible;
+            }
+            .modal-content {
+                max-width: 90%;
+                max-height: 80%;
+                position: relative;
+                transform: scale(0.8);
+                transition: transform 0.3s ease;
+            }
+            .modal-backdrop.active .modal-content {
+                transform: scale(1);
+            }
+            .modal-controls {
+                position: absolute;
+                top: -40px;
+                left: 0;
+                right: 0;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .modal-zoom-info {
+                color: white;
+                font-size: 14px;
+                background-color: rgba(0, 0, 0, 0.5);
+                padding: 4px 8px;
+                border-radius: 4px;
+            }
+            .modal-close {
+                color: white;
+                font-size: 24px;
+                cursor: pointer;
+                background: none;
+                border: none;
+                padding: 5px;
+                transition: transform 0.2s ease;
+            }
+            .modal-close:hover {
+                transform: scale(1.2);
+            }
+            .modal-image-container {
+                position: relative;
+                max-width: 100%;
+                max-height: 80vh;
+                overflow: hidden;
+            }
+            .modal-image {
+                max-width: 100%;
+                max-height: 80vh;
+                object-fit: contain;
+                border: 4px solid white;
+                border-radius: 4px;
+                transition: transform 0.2s ease;
+                cursor: grab;
+            }
+            .modal-image.grabbing {
+                cursor: grabbing;
+            }
+            .modal-zoom-controls {
+                position: absolute;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                gap: 10px;
+                background-color: rgba(0, 0, 0, 0.5);
+                padding: 8px 12px;
+                border-radius: 20px;
+            }
+            .zoom-btn {
+                background-color: white;
+                border: none;
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+                font-weight: bold;
+                transition: all 0.2s ease;
+            }
+            .zoom-btn:hover {
+                background-color: #3b82f6;
+                color: white;
+                transform: scale(1.1);
+            }
+            .reset-btn {
+                background-color: transparent;
+                border: 1px solid white;
+                color: white;
+                padding: 0 10px;
+                border-radius: 15px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+            .reset-btn:hover {
+                background-color: white;
+                color: black;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+    <!-- 图片查看模态框 -->
+    <div class="modal-backdrop" id="imageModal">
+        <div class="modal-content">
+            <div class="modal-controls">
+                <div class="modal-zoom-info">
+                    <span id="zoomPercentage">100%</span>
+                    <span class="ml-2">提示: 鼠标滚轮缩放 | 拖动图片查看</span>
+                </div>
+                <button class="modal-close" id="closeModal">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-image-container" id="modalImageContainer">
+                <img src="" alt="作品大图" class="modal-image" id="modalImage">
+                <div class="modal-zoom-controls">
+                    <button class="zoom-btn" id="zoomOutBtn">-</button>
+                    <button class="zoom-btn" id="zoomInBtn">+</button>
+                    <button class="reset-btn" id="resetZoomBtn">重置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 顶部导航栏 -->
+    <nav class="bg-white shadow-md fixed w-full z-50 transition-all duration-300" id="navbar">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-primary">邹芹 <span class="text-gray-600 text-sm md:text-base font-normal">艺术总监</span></h1>
+            <div class="hidden md:flex space-x-6">
+                <a href="#basic-info" class="hover:text-primary transition-colors">基本信息</a>
+                <a href="#work-experience" class="hover:text-primary transition-colors">工作经历</a>
+                <a href="#skills" class="hover:text-primary transition-colors">职业技能</a>
+                <a href="#certificates" class="hover:text-primary transition-colors">技能证书</a>
+                <a href="#self-evaluation" class="hover:text-primary transition-colors">自我评价</a>
+                <a href="#portfolio" class="hover:text-primary transition-colors">作品集</a>
+            </div>
+            <button class="md:hidden text-gray-600 focus:outline-none" id="menu-toggle">
+                <i class="fa fa-bars text-xl"></i>
+            </button>
+        </div>
+        <!-- 移动端菜单 -->
+        <div class="md:hidden hidden bg-white w-full border-t" id="mobile-menu">
+            <div class="container mx-auto px-4 py-2 flex flex-col space-y-3">
+                <a href="#basic-info" class="py-2 hover:text-primary transition-colors">基本信息</a>
+                <a href="#work-experience" class="py-2 hover:text-primary transition-colors">工作经历</a>
+                <a href="#skills" class="py-2 hover:text-primary transition-colors">职业技能</a>
+                <a href="#certificates" class="py-2 hover:text-primary transition-colors">技能证书</a>
+                <a href="#self-evaluation" class="py-2 hover:text-primary transition-colors">自我评价</a>
+                <a href="#portfolio" class="py-2 hover:text-primary transition-colors">作品集</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 头部横幅 -->
+    <header class="pt-24 pb-16 bg-gradient-to-r from-primary to-secondary text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-3xl md:text-5xl font-bold mb-4 text-shadow">邹芹</h1>
+            <p class="text-xl md:text-2xl opacity-90 max-w-3xl mx-auto">艺术总监 | 游戏美术专家 | 项目管理专业人士</p>
+            <div class="mt-8 flex justify-center space-x-4">
+                <a href="#portfolio" class="bg-white text-primary px-6 py-3 rounded-lg font-medium hover:bg-opacity-90 transition-all shadow-lg">
+                    查看作品集 <i class="fa fa-arrow-right ml-2"></i>
+                </a>
+                <a href="#contact" class="bg-transparent border-2 border-white px-6 py-3 rounded-lg font-medium hover:bg-white hover:bg-opacity-10 transition-all">
+                    联系方式 <i class="fa fa-envelope ml-2"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-12">
+        <!-- 基本信息部分 -->
+        <section id="basic-info" class="mb-20">
+            <div class="flex items-center mb-8">
+                <div class="w-12 h-1 bg-primary rounded-full mr-4"></div>
+                <h2 class="text-2xl md:text-3xl font-bold">基本信息</h2>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 card-hover">
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="flex flex-col justify-center">
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <i class="fa fa-user-circle text-primary text-xl mt-1 mr-4"></i>
+                                <div>
+                                    <span class="font-semibold text-gray-700">姓名：</span>
+                                    <span>邹芹</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-venus text-primary text-xl mt-1 mr-4"></i>
+                                <div>
+                                    <span class="font-semibold text-gray-700">性别：</span>
+                                    <span>女</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-calendar text-primary text-xl mt-1 mr-4"></i>
+                                <div>
+                                    <span class="font-semibold text-gray-700">年龄：</span>
+                                    <span>31岁</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-heart text-primary text-xl mt-1 mr-4"></i>
+                                <div>
+                                    <span class="font-semibold text-gray-700">婚姻状况：</span>
+                                    <span>已婚</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-graduation-cap text-primary text-xl mt-1 mr-4"></i>
+                                <div>
+                                    <span class="font-semibold text-gray-700">教育背景：</span>
+                                    <span>华中师范大学 动画系</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-map-marker text-primary text-xl mt-1 mr-4"></i>
+                                <div>
+                                    <span class="font-semibold text-gray-700">祖籍：</span>
+                                    <span>荆州</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-home text-primary text-xl mt-1 mr-4"></i>
+                                <div>
+                                    <span class="font-semibold text-gray-700">现居地：</span>
+                                    <span>广州</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="flex justify-center items-center">
+                        <div class="w-64 h-64 rounded-full overflow-hidden border-4 border-primary shadow-lg">
+                            <img src="https://picsum.photos/id/64/200/200" alt="邹芹的个人照片" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 工作经历部分（按从近到远时间顺序排列） -->
+        <section id="work-experience" class="mb-20">
+            <div class="flex items-center mb-8">
+                <div class="w-12 h-1 bg-primary rounded-full mr-4"></div>
+                <h2 class="text-2xl md:text-3xl font-bold">工作经历</h2>
+            </div>
+            
+            <div class="relative pl-8 md:pl-12">
+                <!-- 珠海超凡科技（最新） -->
+                <div class="timeline-item relative mb-12 pl-4 md:pl-8">
+                    <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-primary mb-2 md:mb-0">珠海超凡科技有限公司（广州）</h3>
+                            <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">2016年3月 - 至今</span>
+                        </div>
+                        <p class="text-lg text-gray-700 mb-3">艺术总监</p>
+                        <p>负责《模拟驾驶》《A01》《A03》《A16》《智慧园区》等公司全线产品（均为3D写实PBR项目，使用UE4引擎），为公司战略目标提供艺术视野以推动艺术目标达成：前期为项目提供艺术设计思路、可行性技术思路、规划总预算和排期；管理各项目美术开发流程工业化的细节制定和优化；管理各项目美术整体进度、成本、质量；监控风险，监管美术各岗位工作的规划、分配、执行、验收、迭代等；负责与企业内外部产品线上非美术岗的沟通协作，合理规划工作任务；负责美术团队搭建，招聘和培养人才，确保人才梯队发展和人才储备培养，持续充实美术团队技能库；搭建美术知识库，推动内部知识分享，保护公司美术技术的传承。</p>
+                        
+                        <div class="mt-4 pt-4 border-t border-gray-100">
+                            <div class="text-sm text-gray-500 mb-2">相关作品</div>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                <div class="img-container overflow-hidden rounded-lg aspect-video shadow-md">
+                                    <img src="https://picsum.photos/id/237/300/200" alt="模拟驾驶游戏场景设计" class="w-full h-full object-cover portfolio-img work-img">
+                                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                                </div>
+                                <div class="img-container overflow-hidden rounded-lg aspect-video shadow-md">
+                                    <img src="https://picsum.photos/id/110/300/200" alt="A01项目场景展示" class="w-full h-full object-cover portfolio-img work-img">
+                                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                                </div>
+                                <div class="img-container overflow-hidden rounded-lg aspect-video shadow-md">
+                                    <img src="https://picsum.photos/id/111/300/200" alt="A03项目界面设计" class="w-full h-full object-cover portfolio-img work-img">
+                                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                                </div>
+                                <div class="img-container overflow-hidden rounded-lg aspect-video shadow-md">
+                                    <img src="https://picsum.photos/id/112/300/200" alt="智慧园区3D模型展示" class="w-full h-full object-cover portfolio-img work-img">
+                                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 网易游戏 -->
+                <div class="timeline-item relative mb-12 pl-4 md:pl-8">
+                    <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-primary mb-2 md:mb-0">网易游戏事业部艺术中心</h3>
+                            <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">2014年10月 - 2016年3月</span>
+                        </div>
+                        <p class="text-lg text-gray-700 mb-3">3D场景设计师</p>
+                        <p>负责《功夫熊猫》（手游Q版）、《永恒文明》（手游PBR）项目（使用网易自研NeoX引擎），制定并维护优化项目3D场景开发标准和流程；对接场景外包，涉及供应商筛选、沟通、分配、反馈、验收等；进行项目3D场景模块成本预算和排期管理；制作场景模型、编辑项目中大部分关卡及部分场景特效等；对接产品线上其他非美术岗位，协合理安排任务；培养新人。</p>
+                        
+                        <div class="mt-4 pt-4 border-t border-gray-100">
+                            <div class="text-sm text-gray-500 mb-2">相关作品</div>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                <div class="img-container overflow-hidden rounded-lg aspect-video shadow-md">
+                                    <img src="https://picsum.photos/id/160/300/200" alt="功夫熊猫手游场景设计" class="w-full h-full object-cover portfolio-img work-img">
+                                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                                </div>
+                                <div class="img-container overflow-hidden rounded-lg aspect-video shadow-md">
+                                    <img src="https://picsum.photos/id/161/300/200" alt="功夫熊猫角色设计" class="w-full h-full object-cover portfolio-img work-img">
+                                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                                </div>
+                                <div class="img-container overflow-hidden rounded-lg aspect-video shadow-md">
+                                    <img src="https://picsum.photos/id/162/300/200" alt="永恒文明游戏场景" class="w-full h-full object-cover portfolio-img work-img">
+                                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                                </div>
+                                <div class="img-container overflow-hidden rounded-lg aspect-video shadow-md">
+                                    <img src="https://picsum.photos/id/163/300/200" alt="永恒文明道具设计" class="w-full h-full object-cover portfolio-img work-img">
+                                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 四三九九 -->
+                <div class="timeline-item relative mb-12 pl-4 md:pl-8">
+                    <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-primary mb-2 md:mb-0">广州四三九九信息科技有限公司</h3>
+                            <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">2013年03月 - 2014年10月</span>
+                        </div>
+                        <p class="text-lg text-gray-700 mb-3">3D场景设计师</p>
+                        <p>参与微端写实手绘《将夜传》（使用团队自研引擎）项目，这是公司首款微端网游，负责制定项目3D场景模型制作标准、场景模型工作分配和验收、与产品线上其他岗位对接协同工作、制作场景模型与部分场景动画和特效、培养新人。</p>
+                        
+                        <div class="mt-4 pt-4 border-t border-gray-100">
+                            <div class="text-sm text-gray-500 mb-2">相关作品</div>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                <div class="img-container overflow-hidden rounded-lg aspect-video shadow-md">
+                                    <img src="https://picsum.photos/id/239/300/200" alt="将夜传游戏场景" class="w-full h-full object-cover portfolio-img work-img">
+                                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                                </div>
+                                <div class="img-container overflow-hidden rounded-lg aspect-video shadow-md">
+                                    <img src="https://picsum.photos/id/240/300/200" alt="将夜传角色设计" class="w-full h-full object-cover portfolio-img work-img">
+                                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                                </div>
+                                <div class="img-container overflow-hidden rounded-lg aspect-video shadow-md">
+                                    <img src="https://picsum.photos/id/241/300/200" alt="将夜传UI界面" class="w-full h-full object-cover portfolio-img work-img">
+                                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 完美世界 -->
+                <div class="timeline-item relative mb-12 pl-4 md:pl-8">
+                    <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-primary mb-2 md:mb-0">完美世界有限公司艺术中心</h3>
+                            <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">2011年05月 - 2013年3月</span>
+                        </div>
+                        <p class="text-lg text-gray-700 mb-3">3D场景设计师</p>
+                        <p>参与《完美世界国际版》《完美2》《神魔大陆》《诛仙》等项目端游，根据项目要求将原画场景道具3D模型化，使用手绘Q版、手绘写实、写实次时代等3D场景制作流程，项目包含国风武侠、欧美魔幻等类型。</p>
+                        
+                        <div class="mt-4 pt-4 border-t border-gray-100">
+                            <div class="text-sm text-gray-500 mb-2">相关作品</div>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                <div class="img-container overflow-hidden rounded-lg aspect-video shadow-md">
+                                    <img src="https://picsum.photos/id/242/300/200" alt="完美世界场景设计" class="w-full h-full object-cover portfolio-img work-img">
+                                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                                </div>
+                                <div class="img-container overflow-hidden rounded-lg aspect-video shadow-md">
+                                    <img src="https://picsum.photos/id/243/300/200" alt="神魔大陆场景设计" class="w-full h-full object-cover portfolio-img work-img">
+                                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                                </div>
+                                <div class="img-container overflow-hidden rounded-lg aspect-video shadow-md">
+                                    <img src="https://picsum.photos/id/244/300/200" alt="诛仙游戏场景" class="w-full h-full object-cover portfolio-img work-img">
+                                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                                </div>
+                                <div class="img-container overflow-hidden rounded-lg aspect-video shadow-md">
+                                    <img src="https://picsum.photos/id/245/300/200" alt="国风武侠场景设计" class="w-full h-full object-cover portfolio-img work-img">
+                                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 搜狐实习（最早） -->
+                <div class="timeline-item relative pl-4 md:pl-8">
+                    <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-primary mb-2 md:mb-0">搜狐（北京畅游天下网络技术有限公司）</h3>
+                            <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">2010年11月 - 2011年3月</span>
+                        </div>
+                        <p class="text-lg text-gray-700 mb-3">3D场景实习生</p>
+                        <p>学习游戏美术开发全流程。</p>
+                        
+                        <div class="mt-4 pt-4 border-t border-gray-100">
+                            <div class="text-sm text-gray-500 mb-2">相关作品</div>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                <div class="img-container overflow-hidden rounded-lg aspect-video shadow-md">
+                                    <img src="https://picsum.photos/id/246/300/200" alt="实习期间场景设计作品1" class="w-full h-full object-cover portfolio-img work-img">
+                                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                                </div>
+                                <div class="img-container overflow-hidden rounded-lg aspect-video shadow-md">
+                                    <img src="https://picsum.photos/id/247/300/200" alt="实习期间场景设计作品2" class="w-full h-full object-cover portfolio-img work-img">
+                                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 职业技能部分 -->
+        <section id="skills" class="mb-20">
+            <div class="flex items-center mb-8">
+                <div class="w-12 h-1 bg-primary rounded-full mr-4"></div>
+                <h2 class="text-2xl md:text-3xl font-bold">职业技能</h2>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- 项目管理技能 -->
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-4">
+                            <i class="fa fa-tasks text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">项目管理</h3>
+                    </div>
+                    
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <span>熟悉传统项目和敏捷项目管理流程</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <span>熟悉Excel、Project、Tapd等项目管理软件</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <span>熟悉游戏研发各岗位职责内容</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <span>善于通过正式和非正式沟通领导项目团队进行规划和协调</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <span>善于通过对细节工作的拆解分析，建立工业化研发流程，降低生产成本</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- 美术技能 -->
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-4">
+                            <i class="fa fa-paint-brush text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">美术</h3>
+                    </div>
+                    
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <span>具备优秀的审美以及CG美术鉴赏能力，对美术技术潮流有较高敏感度</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <span>熟悉美术各岗位工作内容，理解3D、UI、动画、特效等工作流程</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <span>熟悉研发岗非美术流程，能理解简单的程序语言和UE蓝图功能</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-green-500 mt-1 mr-3"></i>
+                            <span>熟悉3D流程，擅长使用3Dmax、PS、ZB、SP、SD、UE、WC等软件制作3D场景</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 技能证书部分 -->
+        <section id="certificates" class="mb-20">
+            <div class="flex items-center mb-8">
+                <div class="w-12 h-1 bg-primary rounded-full mr-4"></div>
+                <h2 class="text-2xl md:text-3xl font-bold">技能证书</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center card-hover">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-100 flex items-center justify-center">
+                        <i class="fa fa-certificate text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">PMP</h3>
+                    <p class="text-gray-600">项目管理专业人士资格认证</p>
+                    <div class="img-container mt-4 overflow-hidden rounded-lg aspect-video shadow-md">
+                        <img src="https://picsum.photos/id/248/300/200" alt="PMP证书" class="w-full h-full object-cover portfolio-img cert-img">
+                        <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center card-hover">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-100 flex items-center justify-center">
+                        <i class="fa fa-certificate text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">ACP</h3>
+                    <p class="text-gray-600">敏捷管理专业人士资格认证</p>
+                    <div class="img-container mt-4 overflow-hidden rounded-lg aspect-video shadow-md">
+                        <img src="https://picsum.photos/id/249/300/200" alt="ACP证书" class="w-full h-full object-cover portfolio-img cert-img">
+                        <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg p-6 text-center card-hover">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-100 flex items-center justify-center">
+                        <i class="fa fa-certificate text-primary text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">中级经济师</h3>
+                    <p class="text-gray-600">人力资源方向</p>
+                    <div class="img-container mt-4 overflow-hidden rounded-lg aspect-video shadow-md">
+                        <img src="https://picsum.photos/id/250/300/200" alt="中级经济师证书" class="w-full h-full object-cover portfolio-img cert-img">
+                        <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 自我评价部分 -->
+        <section id="self-evaluation" class="mb-20">
+            <div class="flex items-center mb-8">
+                <div class="w-12 h-1 bg-primary rounded-full mr-4"></div>
+                <h2 class="text-2xl md:text-3xl font-bold">自我评价</h2>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                <i class="fa fa-cogs text-primary"></i>
+                            </div>
+                            <h3 class="text-xl font-bold">技术能力</h3>
+                        </div>
+                        <p class="text-gray-700 leading-relaxed">
+                            曾全生命周期参与并管理过多款敏捷和传统项目。游戏研发流程上的各个美术技术岗位，都有实际管理过、动手实践过，能从各岗位的角度准确识别需求，合理拆解工期，敏感监控风险。具备产品思维，善于从公司战略方向出发，寻求实现更大范围的工业流程化，以控制成本。
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                <i class="fa fa-users text-primary"></i>
+                            </div>
+                            <h3 class="text-xl font-bold">领导力</h3>
+                        </div>
+                        <p class="text-gray-700 leading-relaxed">
+                            秉承“相互理解，相互成就”的理念，激励个人职业诉求和公司项目目标一致，从而达成合力。在项目中通常是“链接器”的角色，将项目里不同的信息整合起来、分析并转化。激励、带领团队用各自的技能，协作达成项目目标。
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                <i class="fa fa-road text-primary"></i>
+                            </div>
+                            <h3 class="text-xl font-bold">职业规划</h3>
+                        </div>
+                        <p class="text-gray-700 leading-relaxed">
+                            5-8年内希望能进入一个极其优质的团队，利用好个人所长，参与完成至少一个极具产品力的项目。
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                <i class="fa fa-smile-o text-primary"></i>
+                            </div>
+                            <h3 class="text-xl font-bold">性格画像</h3>
+                        </div>
+                        <p class="text-gray-700 leading-relaxed">
+                            工作沉浸时略显严肃，日常有点话多，有点爱热闹，善于破冰，少许社牛。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 作品集部分 -->
+        <section id="portfolio" class="mb-20">
+            <div class="flex items-center mb-8">
+                <div class="w-12 h-1 bg-primary rounded-full mr-4"></div>
+                <h2 class="text-2xl md:text-3xl font-bold">作品集</h2>
+            </div>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                <!-- 作品集图片 -->
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/251/200/200" alt="3D场景设计作品1" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/252/200/200" alt="3D场景设计作品2" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/253/200/200" alt="3D场景设计作品3" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/254/200/200" alt="3D场景设计作品4" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/255/200/200" alt="3D场景设计作品5" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/256/200/200" alt="3D场景设计作品6" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/257/200/200" alt="3D场景设计作品7" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/258/200/200" alt="3D场景设计作品8" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/259/200/200" alt="3D场景设计作品9" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/260/200/200" alt="3D场景设计作品10" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/261/200/200" alt="3D场景设计作品11" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/262/200/200" alt="3D场景设计作品12" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/263/200/200" alt="3D场景设计作品13" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/264/200/200" alt="3D场景设计作品14" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/265/200/200" alt="3D场景设计作品15" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/266/200/200" alt="3D场景设计作品16" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/267/200/200" alt="3D场景设计作品17" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/268/200/200" alt="3D场景设计作品18" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/269/200/200" alt="3D场景设计作品19" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/270/200/200" alt="3D场景设计作品20" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/271/200/200" alt="3D场景设计作品21" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/272/200/200" alt="3D场景设计作品22" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/273/200/200" alt="3D场景设计作品23" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/274/200/200" alt="3D场景设计作品24" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/275/200/200" alt="3D场景设计作品25" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/276/200/200" alt="3D场景设计作品26" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/277/200/200" alt="3D场景设计作品27" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/278/200/200" alt="3D场景设计作品28" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/279/200/200" alt="3D场景设计作品29" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+                <div class="img-container overflow-hidden rounded-lg aspect-square shadow-md cursor-pointer">
+                    <img src="https://picsum.photos/id/280/200/200" alt="3D场景设计作品30" class="w-full h-full object-cover portfolio-img portfolio-item">
+                    <div class="zoom-indicator"><i class="fa fa-search-plus mr-1"></i> 点击放大</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 联系信息 -->
+        <section id="contact" class="mb-12">
+            <div class="flex items-center mb-8">
+                <div class="w-12 h-1 bg-primary rounded-full mr-4"></div>
+                <h2 class="text-2xl md:text-3xl font-bold">联系方式</h2>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div class="p-4">
+                        <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-blue-100 flex items-center justify-center">
+                            <i class="fa fa-envelope text-primary text-2xl"></i>
+                        </div>
+                        <h3 class="font-bold mb-2">邮箱</h3>
+                        <p class="text-gray-600">zooki007@126.com</p>
+                    </div>
+                    
+                    <div class="p-4">
+                        <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-blue-100 flex items-center justify-center">
+                            <i class="fa fa-phone text-primary text-2xl"></i>
+                        </div>
+                        <h3 class="font-bold mb-2">电话</h3>
+                        <p class="text-gray-600">138613005566</p>
+                    </div>
+                    
+                    <div class="p-4">
+                        <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-blue-100 flex items-center justify-center">
+                            <i class="fa fa-map-marker text-primary text-2xl"></i>
+                        </div>
+                        <h3 class="font-bold mb-2">地址</h3>
+                        <p class="text-gray-600">广州市</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <h2 class="text-2xl font-bold mb-2">邹芹</h2>
+                    <p class="text-gray-400">艺术总监 | 游戏美术专家</p>
+                </div>
+                
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fa fa-linkedin-square text-2xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fa fa-behance-square text-2xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fa fa-github-square text-2xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fa fa-weixin text-2xl"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="mt-8 pt-8 border-t border-gray-700 text-center text-gray-400">
+                <p>© 2023 邹芹 个人简历. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 回到顶部按钮 -->
+    <button id="back-to-top" class="fixed bottom-8 right-8 bg-primary text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg opacity-0 invisible transition-all duration-300">
+        <i class="fa fa-arrow-up"></i>
+    </button>
+
+    <!-- JavaScript -->
+    <script>
+        // 移动端菜单切换
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // 导航栏滚动效果
+        const navbar = document.getElementById('navbar');
+        let lastScrollTop = 0;
+        
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > 50) {
+                navbar.classList.add('py-2', 'shadow-lg');
+                navbar.classList.remove('py-3', 'shadow-md');
+            } else {
+                navbar.classList.add('py-3', 'shadow-md');
+                navbar.classList.remove('py-2', 'shadow-lg');
+            }
+            
+            lastScrollTop = scrollTop;
+        });
+        
+        // 回到顶部按钮
+        const backToTopButton = document.getElementById('back-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.remove('opacity-0', 'invisible');
+                backToTopButton.classList.add('opacity-100', 'visible');
+            } else {
+                backToTopButton.classList.add('opacity-0', 'invisible');
+                backToTopButton.classList.remove('opacity-100', 'visible');
+            }
+        });
+        
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    // 关闭移动菜单（如果打开）
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                    
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // 图片加载失败时的处理
+        document.querySelectorAll('img').forEach(img => {
+            img.addEventListener('error', function() {
+                // 显示默认图标
+                this.src = 'https://picsum.photos/200/200?grayscale';
+                this.alt = '图片加载失败，显示默认图像';
+            });
+        });
+
+        // 图片放大查看功能
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const closeModal = document.getElementById('closeModal');
+        const zoomPercentage = document.getElementById('zoomPercentage');
+        const zoomInBtn = document.getElementById('zoomInBtn');
+        const zoomOutBtn = document.getElementById('zoomOutBtn');
+        const resetZoomBtn = document.getElementById('resetZoomBtn');
+        const modalImageContainer = document.getElementById('modalImageContainer');
+        
+        // 缩放相关变量
+        let currentScale = 1;
+        let scaleStep = 0.1;
+        let maxScale = 3; // 最大缩放比例，可根据需要调整
+        let minScale = 0.5; // 最小缩放比例
+        let isDragging = false;
+        let startX, startY;
+        let translateX = 0;
+        let translateY = 0;
+        let lastTranslateX = 0;
+        let lastTranslateY = 0;
+        
+        // 获取所有作品类图片
+        const workImages = document.querySelectorAll('.work-img');
+        const certImages = document.querySelectorAll('.cert-img');
+        const portfolioItems = document.querySelectorAll('.portfolio-item');
+        
+        // 将所有作品图片合并到一个数组
+        const allWorkImages = [...workImages, ...certImages, ...portfolioItems];
+        
+        // 为每张图片添加点击事件
+        allWorkImages.forEach(img => {
+            img.addEventListener('click', function() {
+                // 重置缩放和位移
+                resetZoom();
+                
+                // 设置模态框图片源和alt属性
+                const largeSrc = this.src.replace('/300/200', '/1200/800').replace('/200/200', '/1200/1200');
+                modalImage.src = largeSrc;
+                modalImage.alt = this.alt;
+                
+                // 显示模态框
+                imageModal.classList.add('active');
+                
+                // 禁止背景滚动
+                document.body.style.overflow = 'hidden';
+            });
+        });
+        
+        // 关闭模态框
+        closeModal.addEventListener('click', () => {
+            closeImageModal();
+        });
+        
+        // 点击模态框背景关闭
+        imageModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeImageModal();
+            }
+        });
+        
+        // 按ESC键关闭模态框
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && imageModal.classList.contains('active')) {
+                closeImageModal();
+            }
+        });
+        
+        // 关闭模态框的函数
+        function closeImageModal() {
+            imageModal.classList.remove('active');
+            document.body.style.overflow = ''; // 恢复背景滚动
+        }
+        
+        // 缩放功能
+        zoomInBtn.addEventListener('click', () => {
+            zoomImage(scaleStep);
+        });
+        
+        zoomOutBtn.addEventListener('click', () => {
+            zoomImage(-scaleStep);
+        });
+        
+        resetZoomBtn.addEventListener('click', resetZoom);
+        
+        // 鼠标滚轮缩放
+        modalImageContainer.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            // 滚轮向上为正，向下为负
+            const delta = e.deltaY < 0 ? scaleStep : -scaleStep;
+            zoomImage(delta);
+        });
+        
+        // 缩放图片函数
+        function zoomImage(delta) {
+            const newScale = currentScale + delta;
+            
+            // 限制缩放范围
+            if (newScale >= minScale && newScale <= maxScale) {
+                currentScale = newScale;
+                updateImageTransform();
+                updateZoomPercentage();
+            }
+        }
+        
+        // 重置缩放和位移
+        function resetZoom() {
+            currentScale = 1;
+            translateX = 0;
+            translateY = 0;
+            lastTranslateX = 0;
+            lastTranslateY = 0;
+            updateImageTransform();
+            updateZoomPercentage();
+        }
+        
+        // 更新图片变换
+        function updateImageTransform() {
+            modalImage.style.transform = `scale(${currentScale}) translate(${translateX}px, ${translateY}px)`;
+        }
+        
+        // 更新缩放百分比显示
+        function updateZoomPercentage() {
+            const percentage = Math.round(currentScale * 100);
+            zoomPercentage.textContent = `${percentage}%`;
+        }
+        
+        // 拖动功能
+        modalImage.addEventListener('mousedown', startDrag);
+        modalImage.addEventListener('mousemove', drag);
+        modalImage.addEventListener('mouseup', endDrag);
+        modalImage.addEventListener('mouseleave', endDrag);
+        
+        // 触摸设备支持
+        modalImage.addEventListener('touchstart', startDragTouch);
+        modalImage.addEventListener('touchmove', dragTouch);
+        modalImage.addEventListener('touchend', endDrag);
+        
+        function startDrag(e) {
+            isDragging = true;
+            startX = e.clientX - lastTranslateX;
+            startY = e.clientY - lastTranslateY;
+            modalImage.classList.add('grabbing');
+        }
+        
+        function startDragTouch(e) {
+            if (e.touches.length === 1) {
+                isDragging = true;
+                startX = e.touches[0].clientX - lastTranslateX;
+                startY = e.touches[0].clientY - lastTranslateY;
+                modalImage.classList.add('grabbing');
+                e.preventDefault(); // 防止触摸时页面滚动
+            }
+        }
+        
+        function drag(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            translateX = e.clientX - startX;
+            translateY = e.clientY - startY;
+            updateImageTransform();
+        }
+        
+        function dragTouch(e) {
+            if (!isDragging || e.touches.length !== 1) return;
+            e.preventDefault();
+            translateX = e.touches[0].clientX - startX;
+            translateY = e.touches[0].clientY - startY;
+            updateImageTransform();
+        }
+        
+        function endDrag() {
+            isDragging = false;
+            lastTranslateX = translateX;
+            lastTranslateY = translateY;
+            modalImage.classList.remove('grabbing');
+        }
+    </script>
+</body>
+</html>
+    
